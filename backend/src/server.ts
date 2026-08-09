@@ -3,7 +3,7 @@ import { env } from './config/env';
 
 const app = createApp();
 
-app.listen(env.PORT, () => {
-  console.log(`🐾 Pawsum API listening on http://localhost:${env.PORT}`);
+app.listen(env.PORT, '0.0.0.0', () => {
+  console.log(`🐾 Pawsum API listening on port ${env.PORT}`);
   console.log(`   Environment: ${env.NODE_ENV}`);
 });
