@@ -38,7 +38,7 @@ Dregital/
 │   ├── tailwind.config.js
 │   └── package.json
 │
-└── backend/                      # Express API (deploy separately)
+└── backend/                     # Express API (deploy separately)
     ├── src/
     │   ├── config/env.ts         # validated env vars (zod)
     │   ├── lib/                  # supabase client, jwt/cookie helpers
@@ -128,7 +128,7 @@ for the dashboard (log in with the credentials in `backend/.env`).
 
 **Build for production**
 ```bash
-cd backend  && npm run build && npm start      # API on :4000
+cd backend && npm run build && npm start      # API on :4000
 cd Frontend && npm run build                   # static site in Frontend/dist
 ```
 
