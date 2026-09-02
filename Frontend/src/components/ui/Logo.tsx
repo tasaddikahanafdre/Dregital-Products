@@ -20,7 +20,7 @@ export default function Logo({ variant = 'dark', className = '' }: LogoProps) {
           variant === 'dark' ? 'text-neutral-900' : 'text-white'
         } ${className}`}
       >
-        Pawsum
+        Dregital
       </span>
     );
   }
@@ -28,7 +28,7 @@ export default function Logo({ variant = 'dark', className = '' }: LogoProps) {
   return (
     <img
       src="/assets/logo.png"
-      alt="Pawsum"
+      alt="Dregital"
       className={`h-9 w-auto object-contain ${className}`}
       onError={() => setFailed(true)}
     />

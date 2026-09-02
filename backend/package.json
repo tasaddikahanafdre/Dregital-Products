@@ -1,8 +1,8 @@
 {
-  "name": "pawsum-backend",
+  "name": "dregital-backend",
   "version": "1.0.0",
   "private": true,
-  "description": "Pawsum e-commerce API — Express + TypeScript + Supabase",
+  "description": "Dregital e-commerce API — Express + TypeScript + Supabase",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",

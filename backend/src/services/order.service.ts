@@ -13,10 +13,21 @@ export const ORDER_STATUSES: OrderStatus[] = [
   'cancelled',
 ];
 
-/** Orders placed within Dhaka district are "inside Dhaka", everything else is "outside". */
-export function determineZone(district: string): 'inside' | 'outside' {
+/** Dhaka subarea districts — near Dhaka but not inside the main city. */
+const DHAKA_SUBAREA_DISTRICTS = new Set([
+  'gazipur',
+  'narayanganj',
+  'tangail',
+  'narsingdi',
+  'munshiganj',
+]);
+
+/** Determine delivery zone: inside, subarea, or outside. */
+export function determineZone(district: string): 'inside' | 'subarea' | 'outside' {
   const normalized = district.trim().toLowerCase().replace(/[^a-z]/g, '');
-  return normalized === 'dhaka' ? 'inside' : 'outside';
+  if (normalized === 'dhaka') return 'inside';
+  if (DHAKA_SUBAREA_DISTRICTS.has(normalized)) return 'subarea';
+  return 'outside';
 }
 
 export function generateOrderNumber(): string {
@@ -29,6 +40,7 @@ export function generateOrderNumber(): string {
 }
 
 export interface CreateOrderInput {
+  productSlug?: string;
   customerName: string;
   phone: string;
   address: string;
@@ -44,12 +56,18 @@ export interface CreateOrderInput {
  * server-side — the client never decides the money.
  */
 export async function createOrder(input: CreateOrderInput): Promise<OrderRow> {
-  const { data: product, error: productError } = await supabase
+  let productQuery = supabase
     .from('products')
     .select('*')
-    .eq('active', true)
-    .limit(1)
-    .maybeSingle();
+    .eq('active', true);
+
+  if (input.productSlug) {
+    productQuery = productQuery.eq('slug', input.productSlug);
+  } else {
+    productQuery = productQuery.limit(1);
+  }
+
+  const { data: product, error: productError } = await productQuery.maybeSingle();
 
   if (productError) throw productError;
   if (!product) {
@@ -61,7 +79,9 @@ export async function createOrder(input: CreateOrderInput): Promise<OrderRow> {
   const deliveryCharge =
     zone === 'inside'
       ? Number(settings.delivery_charge_inside_dhaka)
-      : Number(settings.delivery_charge_outside_dhaka);
+      : zone === 'subarea'
+        ? Number(settings.delivery_charge_dhaka_subarea)
+        : Number(settings.delivery_charge_outside_dhaka);
 
   const unitPrice = Number(product.price);
   const subtotal = unitPrice * input.quantity;

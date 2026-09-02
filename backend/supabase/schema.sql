@@ -1,19 +1,30 @@
 -- ═══════════════════════════════════════════════════════════════════════
---  Pawsum — Supabase schema (run once in Supabase SQL Editor)
+--  Dregital — Supabase schema (run once in Supabase SQL Editor)
 -- ═══════════════════════════════════════════════════════════════════════
 
--- ── Products (single-product store) ─────────────────────────────────────
+-- ── Products (multi-product store) ──────────────────────────────────────
 create table if not exists public.products (
-  id            uuid primary key default gen_random_uuid(),
-  name          text not null,
-  tagline       text,
-  description   text not null default '',
-  price         numeric(12, 2) not null default 0,
-  original_price numeric(12, 2),
-  currency      text not null default 'BDT',
-  active        boolean not null default true,
-  created_at    timestamptz not null default now(),
-  updated_at    timestamptz not null default now()
+  id                    uuid primary key default gen_random_uuid(),
+  slug                  text not null unique,
+  name                  text not null,
+  tagline               text,
+  description           text not null default '',
+  price                 numeric(12, 2) not null default 0,
+  original_price        numeric(12, 2),
+  currency              text not null default 'BDT',
+  active                boolean not null default true,
+  seo_title             text,
+  seo_description       text,
+  features              jsonb not null default '[]'::jsonb,
+  variants              jsonb not null default '[]'::jsonb,
+  specifications        jsonb not null default '[]'::jsonb,
+  in_stock              boolean not null default true,
+  video_url             text,
+  video_type            text default 'none' check (video_type in ('youtube','facebook','none')),
+  video_thumbnail_path  text,
+  video_thumbnail_url   text,
+  created_at            timestamptz not null default now(),
+  updated_at            timestamptz not null default now()
 );
 
 -- ── Product images ──────────────────────────────────────────────────────
@@ -28,6 +39,8 @@ create table if not exists public.product_images (
 
 create index if not exists product_images_product_sort_idx
   on public.product_images (product_id, sort_order);
+
+create index if not exists products_slug_idx on public.products (slug);
 
 -- ── Orders ──────────────────────────────────────────────────────────────
 create table if not exists public.orders (
@@ -57,14 +70,15 @@ create index if not exists orders_created_idx on public.orders (created_at desc)
 
 -- ── Store settings (single row, id = 1) ─────────────────────────────────
 create table if not exists public.store_settings (
-  id                          integer primary key default 1 check (id = 1),
-  delivery_charge_inside_dhaka  numeric(12, 2) not null default 60,
-  delivery_charge_outside_dhaka numeric(12, 2) not null default 120,
-  video_url                   text,
-  video_type                  text default 'none' check (video_type in ('youtube','facebook','none')),
-  video_thumbnail_path        text,
-  video_thumbnail_url         text,
-  updated_at                  timestamptz not null default now()
+  id                              integer primary key default 1 check (id = 1),
+  delivery_charge_inside_dhaka    numeric(12, 2) not null default 60,
+  delivery_charge_outside_dhaka   numeric(12, 2) not null default 120,
+  delivery_charge_dhaka_subarea   numeric(12, 2) not null default 80,
+  video_url                       text,
+  video_type                      text default 'none' check (video_type in ('youtube','facebook','none')),
+  video_thumbnail_path            text,
+  video_thumbnail_url             text,
+  updated_at                      timestamptz not null default now()
 );
 
 -- ── updated_at maintenance ──────────────────────────────────────────────
@@ -118,9 +132,10 @@ create policy "Public read video-thumbnails" on storage.objects
   for select using (bucket_id = 'video-thumbnails');
 
 -- ── Seed data ───────────────────────────────────────────────────────────
-insert into public.products (name, tagline, description, price, original_price)
+insert into public.products (slug, name, tagline, description, price, original_price)
 values (
-  'Pawsum Signature Product',
+  'default-product',
+  'Dregital Signature Product',
   'Crafted for everyday comfort',
   'Set your product name, description, price and images from the Admin Dashboard.',
   0,

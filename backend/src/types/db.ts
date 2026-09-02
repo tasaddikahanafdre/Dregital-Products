@@ -2,6 +2,7 @@
 
 export interface ProductRow {
   id: string;
+  slug: string;
   name: string;
   tagline: string | null;
   description: string;
@@ -9,8 +10,29 @@ export interface ProductRow {
   original_price: number | null;
   currency: string;
   active: boolean;
+  seo_title: string | null;
+  seo_description: string | null;
+  features: string[];
+  variants: ProductVariant[];
+  specifications: ProductSpec[];
+  in_stock: boolean;
+  video_url: string | null;
+  video_type: 'youtube' | 'facebook' | 'none' | null;
+  video_thumbnail_path: string | null;
+  video_thumbnail_url: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface ProductVariant {
+  name: string;
+  options: string[];
+  priceModifier?: number;
+}
+
+export interface ProductSpec {
+  label: string;
+  value: string;
 }
 
 export interface ProductImageRow {
@@ -55,6 +77,7 @@ export interface StoreSettingsRow {
   id: number;
   delivery_charge_inside_dhaka: number;
   delivery_charge_outside_dhaka: number;
+  delivery_charge_dhaka_subarea: number;
   video_url: string | null;
   video_type: 'youtube' | 'facebook' | 'none' | null;
   video_thumbnail_path: string | null;

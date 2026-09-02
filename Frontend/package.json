@@ -1,9 +1,9 @@
 {
-  "name": "pawsum-frontend",
+  "name": "dregital-frontend",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Pawsum storefront — React + TypeScript + Vite + Tailwind",
+  "description": "Dregital storefront — React + TypeScript + Vite + Tailwind",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

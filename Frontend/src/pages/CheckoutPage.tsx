@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ChevronDown, Minus, Plus, ShieldCheck } from 'lucide-react';
 import Spinner from '../components/ui/Spinner';
 import { api, ApiError } from '../lib/api';
 import { DISTRICTS } from '../lib/districts';
 import { formatBDT } from '../lib/format';
-import { useProduct } from '../hooks/useProduct';
+import { useProductBySlug } from '../hooks/useProductBySlug';
 import { useSettings } from '../hooks/useSettings';
 import type { Order } from '../types';
 
@@ -42,7 +42,8 @@ function validate(form: FormState): Errors {
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
-  const { product, images, loading, error } = useProduct();
+  const { slug } = useParams<{ slug: string }>();
+  const { product, images, loading, error } = useProductBySlug(slug);
   const { settings, loading: settingsLoading } = useSettings();
 
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
@@ -52,12 +53,19 @@ export default function CheckoutPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const district = form.district;
-  const isInsideDhaka = district.toLowerCase() === 'dhaka';
 
-  const deliveryCharge = useMemo(() => {
-    if (!district) return null;
-    return isInsideDhaka ? settings.deliveryChargeInsideDhaka : settings.deliveryChargeOutsideDhaka;
-  }, [district, isInsideDhaka, settings]);
+  const { deliveryCharge, zoneLabel } = useMemo(() => {
+    if (!district) return { deliveryCharge: null, zoneLabel: null };
+    const normalized = district.trim().toLowerCase().replace(/[^a-z]/g, '');
+    if (normalized === 'dhaka') {
+      return { deliveryCharge: settings.deliveryChargeInsideDhaka, zoneLabel: 'Inside Dhaka' };
+    }
+    const subareaDistricts = ['gazipur', 'narayanganj', 'tangail', 'narsingdi', 'munshiganj'];
+    if (subareaDistricts.includes(normalized)) {
+      return { deliveryCharge: settings.deliveryChargeDhakaSubarea, zoneLabel: 'Dhaka Subarea' };
+    }
+    return { deliveryCharge: settings.deliveryChargeOutsideDhaka, zoneLabel: 'Outside Dhaka' };
+  }, [district, settings]);
 
   const subtotal = product ? Number(product.price) * quantity : 0;
   const total = subtotal + (deliveryCharge ?? 0);
@@ -69,7 +77,7 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!product) return;
+    if (!product || !slug) return;
 
     const nextErrors = validate(form);
     setErrors(nextErrors);
@@ -78,7 +86,7 @@ export default function CheckoutPage() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const { order } = await api.post<{ order: Order }>('/orders', {
+      const { order } = await api.post<{ order: Order }>(`/orders/${encodeURIComponent(slug)}`, {
         customerName: form.customerName.trim(),
         phone: form.phone.trim(),
         district: form.district,
@@ -110,7 +118,7 @@ export default function CheckoutPage() {
         <p className="font-display text-lg font-bold text-neutral-900">Checkout unavailable</p>
         <p className="mt-2 text-sm text-neutral-500">{error ?? 'Product not found'}</p>
         <Link to="/" className="mt-6 rounded-xl bg-neutral-900 px-6 py-3 text-sm font-semibold text-white">
-          Back to home
+          Back to shop
         </Link>
       </div>
     );
@@ -194,11 +202,7 @@ export default function CheckoutPage() {
                 <dt>
                   Delivery
                   <span className="ml-1.5 rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-500">
-                    {deliveryCharge !== null
-                      ? isInsideDhaka
-                        ? 'Inside Dhaka'
-                        : 'Outside Dhaka'
-                      : '—'}
+                    {deliveryCharge !== null ? zoneLabel ?? '—' : '—'}
                   </span>
                 </dt>
                 <dd>{deliveryCharge !== null ? formatBDT(deliveryCharge) : 'Select district'}</dd>
@@ -306,7 +310,7 @@ export default function CheckoutPage() {
           </section>
 
           {submitError && (
-            <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+            <p className="mt-4 rounded-2xl bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-700">
               {submitError}
             </p>
           )}
@@ -337,7 +341,7 @@ export default function CheckoutPage() {
 function inputClass(hasError: boolean) {
   return `w-full rounded-2xl border bg-white px-4 py-3.5 text-sm text-neutral-900 placeholder:text-neutral-300 outline-none transition-all focus:ring-4 ${
     hasError
-      ? 'border-rose-300 focus:border-rose-400 focus:ring-rose-100'
+      ? 'border-neutral-400 focus:border-neutral-500 focus:ring-neutral-100'
       : 'border-neutral-200 focus:border-brand-400 focus:ring-brand-100'
   }`;
 }
@@ -357,7 +361,7 @@ function Field({
         {label}
       </span>
       {children}
-      {error && <span className="mt-1.5 block text-xs font-medium text-rose-600">{error}</span>}
+      {error && <span className="mt-1.5 block text-xs font-medium text-neutral-600">{error}</span>}
     </label>
   );
 }

@@ -8,8 +8,8 @@ import ordersRouter from './orders';
 const router = Router();
 
 router.use('/auth', authRouter);
-router.use('/product', productRouter);
-router.use('/images', imagesRouter);
+router.use('/products', productRouter);
+router.use('/products', imagesRouter); // mount under /products/:id/images
 router.use('/settings', settingsRouter);
 router.use('/orders', ordersRouter);
 

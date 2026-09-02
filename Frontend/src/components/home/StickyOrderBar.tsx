@@ -5,9 +5,10 @@ import { formatBDT } from '../../lib/format';
 interface StickyOrderBarProps {
   price: number;
   visible: boolean;
+  slug?: string;
 }
 
-export default function StickyOrderBar({ price, visible }: StickyOrderBarProps) {
+export default function StickyOrderBar({ price, visible, slug }: StickyOrderBarProps) {
   const navigate = useNavigate();
 
   return (
@@ -27,7 +28,7 @@ export default function StickyOrderBar({ price, visible }: StickyOrderBarProps) 
             </p>
           </div>
           <button
-            onClick={() => navigate('/checkout')}
+            onClick={() => navigate(slug ? `/checkout/${slug}` : '/')}
             className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3.5 font-display text-sm font-bold text-white shadow-lift transition-all duration-200 hover:bg-brand-700 active:scale-[0.98]"
           >
             <ShoppingBag className="h-4 w-4" />

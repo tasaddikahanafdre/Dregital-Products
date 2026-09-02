@@ -31,11 +31,11 @@ export function createApp() {
   app.use(cookieParser());
 
   app.get('/api/health', (_req, res) => {
-    res.json({ ok: true, service: 'pawsum-api' });
+    res.json({ ok: true, service: 'dregital-api' });
   });
 
   // Public storefront APIs
-  app.use('/api/product', publicProductRouter);
+  app.use('/api/products', publicProductRouter);
   app.use('/api/settings', publicSettingsRouter);
   app.use('/api/orders', publicOrdersRouter);
 

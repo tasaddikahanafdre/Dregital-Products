@@ -16,7 +16,7 @@ export default function Footer() {
           <span>All over Bangladesh</span>
         </div>
         <p className="mt-6 text-xs text-neutral-300">
-          © {new Date().getFullYear()} Pawsum. All rights reserved.
+          © {new Date().getFullYear()} Dregital. All rights reserved.
         </p>
       </div>
     </footer>

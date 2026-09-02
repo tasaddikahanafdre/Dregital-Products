@@ -1,18 +1,27 @@
 import { Router } from 'express';
 import { asyncHandler, HttpError } from '../../middleware/error';
-import { getProductWithImages } from '../../services/product.service';
+import { listActiveProducts, getProductBySlug } from '../../services/product.service';
 
 const router = Router();
 
-/** GET /api/product → the single product + its images. */
+/** GET /api/products → list all active products (shop page). */
 router.get(
   '/',
   asyncHandler(async (_req, res) => {
-    const { product, images } = await getProductWithImages();
-    if (!product || !product.active) {
-      throw new HttpError(404, 'Product not available right now.');
+    const products = await listActiveProducts();
+    res.json({ products });
+  }),
+);
+
+/** GET /api/products/:slug → single product by slug (product landing page). */
+router.get(
+  '/:slug',
+  asyncHandler(async (req, res) => {
+    const result = await getProductBySlug(req.params.slug);
+    if (!result || !result.product.active) {
+      throw new HttpError(404, 'Product not found');
     }
-    res.json({ product, images });
+    res.json(result);
   }),
 );
 

@@ -2,6 +2,7 @@
 
 export interface Product {
   id: string;
+  slug: string;
   name: string;
   tagline: string | null;
   description: string;
@@ -9,8 +10,30 @@ export interface Product {
   original_price: number | null;
   currency: string;
   active: boolean;
+  seo_title: string | null;
+  seo_description: string | null;
+  features: string[];
+  variants: ProductVariant[];
+  specifications: ProductSpec[];
+  in_stock: boolean;
+  thumbnail_url?: string | null;
+  video_url: string | null;
+  video_type: 'youtube' | 'facebook' | 'none' | null;
+  video_thumbnail_path: string | null;
+  video_thumbnail_url: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface ProductVariant {
+  name: string;
+  options: string[];
+  priceModifier?: number;
+}
+
+export interface ProductSpec {
+  label: string;
+  value: string;
 }
 
 export interface ProductImage {
@@ -59,6 +82,7 @@ export interface Order {
 export interface PublicSettings {
   deliveryChargeInsideDhaka: number;
   deliveryChargeOutsideDhaka: number;
+  deliveryChargeDhakaSubarea: number;
   video: {
     url: string;
     type: 'youtube' | 'facebook' | 'none';
@@ -70,6 +94,7 @@ export interface StoreSettings {
   id: number;
   delivery_charge_inside_dhaka: number;
   delivery_charge_outside_dhaka: number;
+  delivery_charge_dhaka_subarea: number;
   video_url: string | null;
   video_type: 'youtube' | 'facebook' | 'none';
   video_thumbnail_path: string | null;
@@ -78,6 +103,7 @@ export interface StoreSettings {
 }
 
 export interface CreateOrderInput {
+  productSlug?: string;
   customerName: string;
   phone: string;
   address: string;
@@ -140,7 +166,7 @@ export const STATUS_META: Record<OrderStatus, { label: string; badge: string; do
   },
   cancelled: {
     label: 'Cancelled',
-    badge: 'bg-rose-50 text-rose-700 ring-rose-200',
-    dot: 'bg-rose-500',
+    badge: 'bg-neutral-100 text-neutral-700 ring-neutral-200',
+    dot: 'bg-neutral-500',
   },
 };

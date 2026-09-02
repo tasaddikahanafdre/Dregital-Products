@@ -87,7 +87,7 @@ export default function OrdersPanel() {
       </div>
 
       {error && (
-        <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</p>
+        <p className="rounded-2xl bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-700">{error}</p>
       )}
 
       {loading ? (

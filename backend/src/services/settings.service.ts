@@ -7,6 +7,7 @@ const DEFAULTS = {
   id: 1,
   delivery_charge_inside_dhaka: 60,
   delivery_charge_outside_dhaka: 120,
+  delivery_charge_dhaka_subarea: 80,
   video_url: null,
   video_type: 'none',
   video_thumbnail_path: null,
@@ -37,6 +38,7 @@ export async function getSettings(): Promise<StoreSettingsRow> {
 export interface UpdateSettingsInput {
   delivery_charge_inside_dhaka?: number;
   delivery_charge_outside_dhaka?: number;
+  delivery_charge_dhaka_subarea?: number;
   video_url?: string;
   video_type?: (typeof VIDEO_TYPES)[number];
 }

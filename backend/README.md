@@ -1,6 +1,6 @@
-# Pawsum Backend API
+# Dregital Backend API
 
-Express + TypeScript API for the Pawsum store. Talks to Supabase (PostgreSQL + Storage)
+Express + TypeScript API for the Dregital store. Talks to Supabase (PostgreSQL + Storage)
 using the **service-role** key — this is the only place that key ever lives.
 
 ## Quick start
@@ -32,7 +32,7 @@ buckets, and seeds a placeholder product + settings row.
 - Admin credentials come from `ADMIN_USERNAME` / `ADMIN_PASSWORD` env vars — nothing
   is hardcoded, and the login endpoint compares them in constant time.
 - A successful login returns a signed JWT in an **httpOnly** cookie
-  (`pawsum_admin_token`), which is all the frontend ever holds.
+  (`dregital_admin_token`), which is all the frontend ever holds.
 - All `/api/admin/*` routes (except login) require that cookie; login attempts are
   rate-limited per IP.
 

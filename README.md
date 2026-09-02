@@ -1,7 +1,7 @@
-# 🐾 Pawsum — Single-Product E-commerce Store
+# Dregital — Single-Product E-commerce Store
 
 A complete, production-ready single-product e-commerce store built for **mobile-first** customers.
-Pink / white / black design, **BDT (৳)** pricing, Cash on Delivery, and a fully separated
+White / black design, **BDT (৳)** pricing, Cash on Delivery, and a fully separated
 frontend + backend so both can be hosted independently.
 
 | Part | Stack | Folder |
@@ -15,11 +15,11 @@ frontend + backend so both can be hosted independently.
 ## 📁 Folder structure
 
 ```
-Pawsum/
+Dregital/
 ├── Frontend/                     # React + Vite + Tailwind (deploy separately)
 │   ├── public/
 │   │   └── assets/
-│   │       └── logo.png          # ← drop YOUR Pawsum logo here
+│   │       └── logo.png          # ← drop YOUR Dregital logo here
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── admin/            # Stats, product editor, images, video/settings, orders
@@ -146,7 +146,7 @@ cd Frontend && npm run build                   # static site in Frontend/dist
 ### Frontend (Vercel, Netlify, Cloudflare Pages…)
 1. Deploy the `Frontend/` folder as a static site, build command `npm run build`,
    output directory `dist`.
-2. Set `VITE_API_URL` to your deployed backend URL, e.g. `https://api.pawsum.com/api`.
+2. Set `VITE_API_URL` to your deployed backend URL, e.g. `https://api.dregital.com/api`.
 3. **SPA fallback:** make sure all routes redirect to `index.html`
    (Vercel/Netlify do this automatically for `react-router`).
 4. **Cookies:** the backend sets the admin session cookie with

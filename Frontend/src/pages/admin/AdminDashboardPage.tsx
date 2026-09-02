@@ -1,23 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { BarChart3, LogOut, Package, ShoppingCart, Video } from 'lucide-react';
+import { BarChart3, LogOut, Package, Plus, ShoppingCart, Truck } from 'lucide-react';
 import Logo from '../../components/ui/Logo';
 import Spinner from '../../components/ui/Spinner';
 import StatsPanel from '../../components/admin/StatsPanel';
+import ProductsList from '../../components/admin/ProductsList';
 import ProductEditor from '../../components/admin/ProductEditor';
 import ImagesManager from '../../components/admin/ImagesManager';
-import MediaSettings from '../../components/admin/MediaSettings';
+import DeliverySettings from '../../components/admin/DeliverySettings';
 import OrdersPanel from '../../components/admin/OrdersPanel';
 import { api } from '../../lib/api';
 import { useAdminAuth } from '../../hooks/useAdminAuth';
 import type { Product, ProductImage, StoreSettings } from '../../types';
 
-type Tab = 'overview' | 'product' | 'media' | 'orders';
+type Tab = 'overview' | 'products' | 'product-edit' | 'delivery' | 'orders';
 
 const TABS: Array<{ id: Tab; label: string; icon: typeof Package }> = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
-  { id: 'product', label: 'Product', icon: Package },
-  { id: 'media', label: 'Media & Video', icon: Video },
+  { id: 'products', label: 'Products', icon: Package },
+  { id: 'delivery', label: 'Delivery', icon: Truck },
   { id: 'orders', label: 'Orders', icon: ShoppingCart },
 ];
 
@@ -26,8 +27,9 @@ export default function AdminDashboardPage() {
   const navigate = useNavigate();
 
   const [tab, setTab] = useState<Tab>('overview');
-  const [product, setProduct] = useState<Product | null>(null);
-  const [images, setImages] = useState<ProductImage[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editingImages, setEditingImages] = useState<ProductImage[]>([]);
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -36,12 +38,11 @@ export default function AdminDashboardPage() {
     setLoading(true);
     setLoadError(null);
     try {
-      const [productData, settingsData] = await Promise.all([
-        api.get<{ product: Product; images: ProductImage[] }>('/admin/product'),
+      const [productsData, settingsData] = await Promise.all([
+        api.get<{ products: Product[] }>('/admin/products'),
         api.get<{ settings: StoreSettings }>('/admin/settings'),
       ]);
-      setProduct(productData.product);
-      setImages(productData.images);
+      setProducts(productsData.products);
       setSettings(settingsData.settings);
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : 'Failed to load data');
@@ -69,6 +70,55 @@ export default function AdminDashboardPage() {
   const handleLogout = async () => {
     await logout();
     navigate('/admin/login', { replace: true });
+  };
+
+  const handleEditProduct = async (product: Product) => {
+    setTab('product-edit');
+    try {
+      const data = await api.get<{ product: Product; images: ProductImage[] }>(
+        `/admin/products/${product.id}`,
+      );
+      setEditingProduct(data.product);
+      setEditingImages(data.images);
+    } catch {
+      setEditingProduct(product);
+      setEditingImages([]);
+    }
+  };
+
+  const handleCreateProduct = () => {
+    setEditingProduct(null);
+    setEditingImages([]);
+    setTab('product-edit');
+  };
+
+  const handleProductSaved = async (product: Product) => {
+    setEditingProduct(product);
+    setProducts((prev) => {
+      const idx = prev.findIndex((p) => p.id === product.id);
+      if (idx >= 0) {
+        const next = [...prev];
+        next[idx] = product;
+        return next;
+      }
+      return [product, ...prev];
+    });
+    // Fetch images for the newly created/updated product
+    try {
+      const data = await api.get<{ product: Product; images: ProductImage[] }>(
+        `/admin/products/${product.id}`,
+      );
+      setEditingImages(data.images);
+    } catch {
+      // ignore — images may be empty for new products
+    }
+  };
+
+  const handleProductDeleted = (productId: string) => {
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    setEditingProduct(null);
+    setEditingImages([]);
+    setTab('products');
   };
 
   return (
@@ -104,7 +154,7 @@ export default function AdminDashboardPage() {
 
       <main className="mx-auto max-w-3xl px-4 pt-6">
         {loadError && (
-          <div className="mb-4 flex items-center justify-between rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+          <div className="mb-4 flex items-center justify-between rounded-2xl bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-700">
             <span>{loadError}</span>
             <button onClick={() => void loadAll()} className="font-bold underline underline-offset-2">
               Retry
@@ -112,25 +162,59 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {loading && !product ? (
+        {loading && !products.length ? (
           <div className="flex justify-center py-24 text-neutral-400">
             <Spinner className="h-8 w-8" />
           </div>
         ) : (
           <div className="animate-fade-in">
             {tab === 'overview' && <StatsPanel />}
-            {tab === 'product' && (
+            {tab === 'products' && (
               <div className="space-y-4">
-                <ProductEditor
-                  product={product}
-                  loading={loading}
-                  onSaved={(p) => setProduct(p)}
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-base font-bold text-neutral-900">
+                    Products ({products.length})
+                  </h2>
+                  <button
+                    onClick={handleCreateProduct}
+                    className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-700"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    New Product
+                  </button>
+                </div>
+                <ProductsList
+                  products={products}
+                  onEdit={handleEditProduct}
+                  onRefresh={loadAll}
                 />
-                <ImagesManager images={images} onChanged={setImages} />
               </div>
             )}
-            {tab === 'media' && (
-              <MediaSettings
+            {tab === 'product-edit' && (
+              <div className="space-y-4">
+                <button
+                  onClick={() => setTab('products')}
+                  className="text-sm font-semibold text-neutral-500 hover:text-neutral-900 transition-colors"
+                >
+                  ← Back to products
+                </button>
+                <ProductEditor
+                  product={editingProduct}
+                  loading={loading}
+                  onSaved={handleProductSaved}
+                  onDeleted={handleProductDeleted}
+                />
+                {editingProduct && (
+                  <ImagesManager
+                    productId={editingProduct.id}
+                    images={editingImages}
+                    onChanged={setEditingImages}
+                  />
+                )}
+              </div>
+            )}
+            {tab === 'delivery' && (
+              <DeliverySettings
                 settings={settings}
                 loading={loading}
                 onSaved={setSettings}

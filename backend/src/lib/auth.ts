@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 
-export const ADMIN_COOKIE_NAME = 'pawsum_admin_token';
+export const ADMIN_COOKIE_NAME = 'dregital_admin_token';
 
 /** Parse a JWT expiry like "12h", "7d", "30m" into milliseconds. */
 export function jwtExpiryToMs(expiry: string): number {

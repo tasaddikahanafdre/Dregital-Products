@@ -97,7 +97,7 @@ export default function AdminLoginPage() {
           </label>
 
           {error && (
-            <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+            <p className="mt-4 rounded-2xl bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-700">
               {error}
             </p>
           )}

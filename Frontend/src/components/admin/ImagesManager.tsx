@@ -5,11 +5,12 @@ import type { ProductImage } from '../../types';
 import Spinner from '../ui/Spinner';
 
 interface ImagesManagerProps {
+  productId: string;
   images: ProductImage[];
   onChanged: (images: ProductImage[]) => void;
 }
 
-export default function ImagesManager({ images, onChanged }: ImagesManagerProps) {
+export default function ImagesManager({ productId, images, onChanged }: ImagesManagerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [reordering, setReordering] = useState(false);
@@ -31,7 +32,10 @@ export default function ImagesManager({ images, onChanged }: ImagesManagerProps)
       for (const file of Array.from(files)) {
         const form = new FormData();
         form.append('image', file);
-        const { image } = await api.upload<{ image: ProductImage }>('/admin/images', form);
+        const { image } = await api.upload<{ image: ProductImage }>(
+          `/admin/products/${productId}/images`,
+          form,
+        );
         uploaded.push(image);
       }
       onChanged([...images, ...uploaded]);
@@ -48,7 +52,7 @@ export default function ImagesManager({ images, onChanged }: ImagesManagerProps)
   const handleDelete = async (image: ProductImage) => {
     if (!window.confirm('Delete this image?')) return;
     try {
-      await api.delete(`/admin/images/${image.id}`);
+      await api.delete(`/admin/products/${productId}/images/${image.id}`);
       onChanged(images.filter((i) => i.id !== image.id));
       notify('Image deleted');
       setTimeout(() => notify(null), 2500);
@@ -65,7 +69,7 @@ export default function ImagesManager({ images, onChanged }: ImagesManagerProps)
     [next[index], next[target]] = [next[target], next[index]];
     setReordering(true);
     try {
-      await api.put('/admin/images/reorder', {
+      await api.put(`/admin/products/${productId}/images/reorder`, {
         imageIds: next.map((i) => i.id),
       });
       onChanged(next);
@@ -84,7 +88,7 @@ export default function ImagesManager({ images, onChanged }: ImagesManagerProps)
       </p>
 
       {error && (
-        <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+        <p className="mt-4 rounded-2xl bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-700">
           {error}
         </p>
       )}
@@ -172,7 +176,7 @@ export default function ImagesManager({ images, onChanged }: ImagesManagerProps)
                 <button
                   onClick={() => handleDelete(image)}
                   aria-label="Delete image"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-rose-500 transition-colors hover:bg-rose-50"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

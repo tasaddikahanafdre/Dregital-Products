@@ -27,7 +27,7 @@ export default function StatsPanel() {
   }, [load]);
 
   if (error) {
-    return <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>;
+    return <p className="rounded-2xl bg-neutral-100 px-4 py-3 text-sm text-neutral-700">{error}</p>;
   }
 
   if (!stats) {
@@ -42,7 +42,7 @@ export default function StatsPanel() {
     { label: 'Total orders', value: stats.totalOrders, icon: Package, tone: 'text-neutral-900 bg-neutral-100' },
     { label: 'Pending', value: stats.pendingOrders, icon: Timer, tone: 'text-amber-600 bg-amber-50' },
     { label: 'Delivered', value: stats.deliveredOrders, icon: CheckCircle2, tone: 'text-emerald-600 bg-emerald-50' },
-    { label: 'Cancelled', value: stats.cancelledOrders, icon: XCircle, tone: 'text-rose-600 bg-rose-50' },
+    { label: 'Cancelled', value: stats.cancelledOrders, icon: XCircle, tone: 'text-neutral-600 bg-neutral-100' },
   ];
 
   return (

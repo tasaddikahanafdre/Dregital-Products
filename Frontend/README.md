@@ -1,7 +1,7 @@
-# Pawsum Frontend
+# Dregital Frontend
 
 React + TypeScript + Vite + Tailwind CSS storefront and admin dashboard.
-Mobile-first, pink/white/black design, BDT (৳) pricing.
+Mobile-first, white/black design, BDT (৳) pricing.
 
 ## Quick start
 

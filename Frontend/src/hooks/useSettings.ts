@@ -5,6 +5,7 @@ import type { PublicSettings } from '../types';
 const EMPTY: PublicSettings = {
   deliveryChargeInsideDhaka: 0,
   deliveryChargeOutsideDhaka: 0,
+  deliveryChargeDhakaSubarea: 0,
   video: { url: '', type: 'none', thumbnailUrl: null },
 };
 

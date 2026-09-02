@@ -19,6 +19,7 @@ export default function MediaSettings({ settings, loading, onSaved }: MediaSetti
     video_type: 'youtube' as 'youtube' | 'facebook',
     delivery_charge_inside_dhaka: '',
     delivery_charge_outside_dhaka: '',
+    delivery_charge_dhaka_subarea: '',
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -33,6 +34,7 @@ export default function MediaSettings({ settings, loading, onSaved }: MediaSetti
       video_type: settings.video_type === 'facebook' ? 'facebook' : 'youtube',
       delivery_charge_inside_dhaka: String(settings.delivery_charge_inside_dhaka),
       delivery_charge_outside_dhaka: String(settings.delivery_charge_outside_dhaka),
+      delivery_charge_dhaka_subarea: String(settings.delivery_charge_dhaka_subarea ?? 80),
     });
   }, [settings]);
 
@@ -57,6 +59,7 @@ export default function MediaSettings({ settings, loading, onSaved }: MediaSetti
           video_type: form.video_url.trim() ? form.video_type : 'none',
           delivery_charge_inside_dhaka: Number(form.delivery_charge_inside_dhaka) || 0,
           delivery_charge_outside_dhaka: Number(form.delivery_charge_outside_dhaka) || 0,
+          delivery_charge_dhaka_subarea: Number(form.delivery_charge_dhaka_subarea) || 0,
         },
       );
       onSaved(updated);
@@ -169,7 +172,7 @@ export default function MediaSettings({ settings, loading, onSaved }: MediaSetti
         {/* Delivery charges */}
         <div className="mt-6 border-t border-neutral-100 pt-5">
           <h3 className="font-display text-sm font-bold text-neutral-900">Delivery charges (৳)</h3>
-          <div className="mt-3 grid grid-cols-2 gap-4">
+          <div className="mt-3 grid grid-cols-3 gap-4">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-neutral-500">
                 Inside Dhaka
@@ -181,6 +184,21 @@ export default function MediaSettings({ settings, loading, onSaved }: MediaSetti
                 value={form.delivery_charge_inside_dhaka}
                 onChange={(e) =>
                   setForm((f) => ({ ...f, delivery_charge_inside_dhaka: e.target.value }))
+                }
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                Dhaka Subarea
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={form.delivery_charge_dhaka_subarea}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, delivery_charge_dhaka_subarea: e.target.value }))
                 }
                 className={inputCls}
               />
@@ -207,7 +225,7 @@ export default function MediaSettings({ settings, loading, onSaved }: MediaSetti
         </div>
 
         {error && (
-          <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+          <p className="mt-4 rounded-2xl bg-neutral-100 px-4 py-3 text-sm font-medium text-neutral-700">
             {error}
           </p>
         )}

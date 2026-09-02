@@ -5,16 +5,16 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#fdf2f8',
-          100: '#fce7f3',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: '#ec4899',
-          600: '#db2777',
-          700: '#be185d',
-          800: '#9d174d',
-          900: '#831843',
+          50: '#f5f5f5',
+          100: '#e5e5e5',
+          200: '#d4d4d4',
+          300: '#a3a3a3',
+          400: '#525252',
+          500: '#404040',
+          600: '#171717',
+          700: '#0a0a0a',
+          800: '#0a0a0a',
+          900: '#0a0a0a',
         },
         ink: {
           DEFAULT: '#0a0a0a',
@@ -22,8 +22,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        display: ['Sora', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Anek Bangla', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        display: ['Sora', 'Anek Bangla', 'Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         soft: '0 8px 30px rgba(15, 15, 15, 0.08)',

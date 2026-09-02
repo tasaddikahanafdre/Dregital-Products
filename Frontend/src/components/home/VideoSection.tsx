@@ -2,7 +2,7 @@ import { Play, Youtube } from 'lucide-react';
 import type { PublicSettings } from '../../types';
 
 interface VideoSectionProps {
-  video: PublicSettings['video'];
+  video?: PublicSettings['video'];
 }
 
 export default function VideoSection({ video }: VideoSectionProps) {

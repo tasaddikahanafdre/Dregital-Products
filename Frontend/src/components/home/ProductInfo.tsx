@@ -5,6 +5,7 @@ import { discountPercent, formatBDT } from '../../lib/format';
 
 interface ProductInfoProps {
   product: Product;
+  slug?: string;
 }
 
 const TRUST_ITEMS = [
@@ -13,7 +14,7 @@ const TRUST_ITEMS = [
   { icon: ShieldCheck, label: 'Authentic product' },
 ];
 
-export default function ProductInfo({ product }: ProductInfoProps) {
+export default function ProductInfo({ product, slug }: ProductInfoProps) {
   const navigate = useNavigate();
   const discount = discountPercent(product.price, product.original_price);
 
@@ -72,7 +73,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
       {/* Order CTA */}
       <button
-        onClick={() => navigate('/checkout')}
+        onClick={() => navigate(slug ? `/checkout/${slug}` : '/')}
         className="group mt-7 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-600 px-6 py-4 font-display text-base font-bold text-white shadow-lift transition-all duration-200 hover:bg-brand-700 active:scale-[0.98]"
       >
         Order Now

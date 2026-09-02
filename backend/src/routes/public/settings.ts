@@ -15,6 +15,7 @@ router.get(
     res.json({
       deliveryChargeInsideDhaka: Number(s.delivery_charge_inside_dhaka),
       deliveryChargeOutsideDhaka: Number(s.delivery_charge_outside_dhaka),
+      deliveryChargeDhakaSubarea: Number(s.delivery_charge_dhaka_subarea),
       video: {
         url: s.video_url ?? '',
         type: s.video_type ?? 'none',

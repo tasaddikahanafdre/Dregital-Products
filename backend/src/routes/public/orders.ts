@@ -18,6 +18,18 @@ router.post(
   }),
 );
 
+/**
+ * POST /api/orders/:slug → place an order for a specific product.
+ */
+router.post(
+  '/:slug',
+  asyncHandler(async (req, res) => {
+    const input = createOrderSchema.parse({ ...req.body, productSlug: req.params.slug });
+    const order = await createOrder(input);
+    res.status(201).json({ order });
+  }),
+);
+
 /** GET /api/orders/:orderNumber → order lookup for the confirmation page. */
 router.get(
   '/:orderNumber',
