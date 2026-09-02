@@ -1,6 +1,6 @@
 const API_URL = (
   import.meta.env.VITE_API_URL as string | undefined
-)?.replace(/\/+$/, '') ?? 'http://localhost:4000/api';
+)?.replace(/\/+$/, '') ?? 'https://dregital-products.onrender.com/api';
 
 export class ApiError extends Error {
   constructor(
